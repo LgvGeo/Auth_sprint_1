@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./
+    env_file:
+      - ./.env
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - ./src:/opt/app/src
+  redis:
+    image: redis:7.2.1-alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data:rw
+  db:
+    image: postgres:14.9-alpine3.18
+    ports:
+      - "127.0.0.1:5432:5432"
+    env_file: 
+      - ./.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+
+volumes:
+  postgres_data:
+  redis_data:

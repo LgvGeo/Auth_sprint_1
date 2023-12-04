@@ -1,3 +1,27 @@
+# Запуск проекта  
+в корневой директории проекта создаем .env файл(пример)  
+POSTGRES_USER=postgres  
+POSTGRES_DB=postgres  
+POSTGRES_PASSWORD=postgres  
+POSTGRES_PORT=5432  
+POSTGRES_HOST=db  
+REDIS_HOST=redis  
+REDIS_PORT=6379  
+SECRET_KEY=secret  
+ACCESS_TOKEN_TTL=300  
+REFRESH_TOKEN_TTL=1000  
+Последние три аргумента есть секретный ключ, время жизни access и refresh токенов в секундах.  
+После этого docker compose up --build  
+После запуска окружения накатываем миграции командой  
+docker compose exec api alembic upgrade head  
+Можно создать суперпользователя  
+docker compose exec api python create_superuser.py
+Подробнее об аргументах команды создания суперпользователя  
+docker compose exec api python create_superuser.py --help  
+Авторизация выполнена на основе jwt токенов. Пользовательские роли хранятся в токенах. Разграничение доступа происходит на основе значения ролей в access токенах
+
+
+  
 # Проектная работа 6 спринта
 
 С этого модуля вы больше не будете получать чётко расписанное ТЗ, а задания для каждого спринта вы найдёте внутри уроков. Перед тем как начать программировать, вам предстоит продумать архитектуру решения, декомпозировать задачи и распределить их между командой.
