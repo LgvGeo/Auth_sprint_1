@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.responses import ORJSONResponse, Response
 
 from models.request_models.user import (UserLogInRequestModel,
@@ -172,6 +172,9 @@ async def logout_user(
 async def get_user_history(
     Auth: Annotated[str, Header()],
     user_id: str,
+    page_size: Annotated[
+        int, Query(description='Pagination page size', ge=1)] = 10,
+    page_number: Annotated[int, Query(description='Page number', ge=1)] = 1,
     jwt_service: JwtService = Depends(get_jwt_service),
     user_service: UserService = Depends(get_user_service)
 ):
@@ -180,14 +183,15 @@ async def get_user_history(
     except TokenValidationError:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST, detail='bad request')
-    auth_user_id = await jwt_service.get_token_payload(Auth)
+    auth_user_id = (await jwt_service.get_token_payload(Auth))['user']
     if auth_user_id != user_id:
         try:
             await jwt_service.check_roles(Auth, ['admin'])
         except PermissionDenied:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN, detail='forbidden')
-    result = await user_service.get_user_history(user_id)
+    result = await user_service.get_user_history(
+        user_id, page_size, page_number)
     return [
         UserHistoryResponseModel(
             created_at=x.created_at,

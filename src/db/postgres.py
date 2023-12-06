@@ -3,13 +3,12 @@ from sqlalchemy.orm import sessionmaker
 
 from settings.config import PostgresSettings
 
-
 pg_settings = PostgresSettings()
 dsn = (
     f'postgresql+asyncpg://{pg_settings.user}:{pg_settings.password}'
     f'@{pg_settings.host}:{pg_settings.port}/{pg_settings.db}'
 )
-engine = create_async_engine(dsn, echo=True, future=True)
+engine = create_async_engine(dsn, future=True)
 async_session = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )

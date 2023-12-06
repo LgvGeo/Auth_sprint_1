@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14.9-alpine3.18
+    volumes:
+      - ./testdata/pg_dump.sql:/docker-entrypoint-initdb.d/pg_dump.sql
+    env_file: 
+      - ./.env
+  redis:
+    image: redis:7.2.1-alpine
+  api:
+    command: >
+      sh -c "sleep 8 && gunicorn -b 0.0.0.0:8000 -k main.CustomUvicornWorker main:app"
+    depends_on:
+      - db
+      - redis
+    build: ../
+    env_file:
+      - ../.env
+  tests:
+    depends_on:
+      - api
+    build: ./
+    env_file:
+      - ./.env
