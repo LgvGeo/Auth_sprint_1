@@ -15,9 +15,21 @@ REFRESH_TOKEN_TTL=1000
 После запуска окружения накатываем миграции командой  
 docker compose exec api alembic upgrade head  
 Можно создать суперпользователя  
-docker compose exec api python create_superuser.py
+docker compose exec api python create_superuser.py  
 Подробнее об аргументах команды создания суперпользователя  
 docker compose exec api python create_superuser.py --help  
+# Запуск тестов  
+Переходим в папку tests и создаем дополнительно .env файл с содержимым  
+POSTGRES_USER=postgres  
+POSTGRES_DB=postgres  
+POSTGRES_PASSWORD=postgres  
+POSTGRES_PORT=5432  
+POSTGRES_HOST=db  
+REDIS_HOST=redis  
+REDIS_PORT=6379  
+api_url=http://api:8000  
+После этого запускаем тесты: docker compose up --build
+
 Авторизация выполнена на основе jwt токенов. Пользовательские роли хранятся в токенах. Разграничение доступа происходит на основе значения ролей в access токенах
 
 

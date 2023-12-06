@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 
 import jwt
-from db.cache_storage import RedisCacheStorage, get_cache_storage
 from fastapi import Depends
+
+from db.cache_storage import RedisCacheStorage, get_cache_storage
 from settings.config import CommonSettings
 
 SETTINGS = CommonSettings()
@@ -50,10 +51,12 @@ class JwtService:
 
     async def validate_access_token(self, token):
         try:
-            payload = jwt.decode(token, SETTINGS.secret_key, algorithms=['HS256'])
+            payload = jwt.decode(
+                token, SETTINGS.secret_key, algorithms=['HS256'])
+            print(payload)
             is_token_in_cache = await self.cache_storage.get_from_cache(token)
             if is_token_in_cache or payload['type'] != 'access':
-                raise
+                raise ValueError
         except Exception:
             raise TokenValidationError('error')
 
@@ -63,7 +66,8 @@ class JwtService:
 
     async def validate_refresh_token(self, token):
         try:
-            payload = jwt.decode(token, SETTINGS.secret_key, algorithms=['HS256'])
+            payload = jwt.decode(
+                token, SETTINGS.secret_key, algorithms=['HS256'])
             is_token_in_cache = await self.cache_storage.get_from_cache(token)
             if not is_token_in_cache or payload['type'] != 'refresh':
                 raise
@@ -102,6 +106,7 @@ class JwtService:
             token, SETTINGS.secret_key,
             algorithms=['HS256']
         )['roles']
+        roles = set(roles)
         for role in user_roles:
             if role in roles:
                 return

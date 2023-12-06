@@ -21,13 +21,13 @@ def postgres_conntection(**kwargs):
 
 @app.command()
 def main(
+    db_password: str,
     email: str = 'admin@admin.admin', password: str = 'admin',
     first_name: str = 'admin', last_name: str = 'admin',
     host: str = 'db',
     port: int = 5432,
     db: str = 'postgres',
-    user: str = 'postgres',
-    db_password: str = 'postgres'
+    user: str = 'postgres'
 ):
     dsl = {
         'dbname': db,
